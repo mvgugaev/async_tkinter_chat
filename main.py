@@ -8,6 +8,7 @@ import gui
 from utils import get_parser
 from server import handle_connection
 from auntification import InvalidToken
+from anyio import create_task_group, ExceptionGroup
 
 TOKEN_FILE_PATH = 'token.txt'
 
@@ -75,13 +76,16 @@ async def main():
         messages_queue,
     )
     try:
-        await asyncio.gather(
-            gui.draw(
-                messages_queue, 
-                sending_queue, 
+        async with create_task_group() as tg:
+            tg.start_soon(
+                gui.draw,
+                messages_queue,
+                sending_queue,
                 status_updates_queue,
-            ),
-            handle_connection(
+            )
+
+            tg.start_soon(
+                handle_connection,
                 args,
                 messages_queue,
                 messages_history_queue,
@@ -91,12 +95,13 @@ async def main():
                 logger,
                 watchdog_logger,
                 TOKEN_FILE_PATH,
-            ),
-            save_messages(
+            )
+
+            tg.start_soon(
+                save_messages,
                 args.history,
                 messages_history_queue,
             )
-        )
             
     except InvalidToken:
         messagebox.showinfo(

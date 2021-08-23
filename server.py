@@ -18,8 +18,8 @@ from utils import (
 @change_timeout_to_connection_error
 async def ping_server(watchdog_queue, host: str, port: str, logger, timeout: float = 0.3, interval: float = 0.3):
     """Корутина для отправки пустого сообщения раз в <interval> секунд и запись в watchdog_queue. В случае превышения <timeout> вызывается ConnectionError."""
-    while True:
-        async with open_connection(host, port, logger) as (_, writer):
+    async with open_connection(host, port, logger) as (_, writer):
+        while True:
             async with async_timeout(timeout) as cm:
                 await submit_message(
                     writer,

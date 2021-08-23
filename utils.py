@@ -23,7 +23,6 @@ async def reconnect(task, *args, **kwargs):
     """Декоратор для перезапуска карутины в случае ConnectionError и gaierror."""
     while True:
         try:
-            print(f'Start coro {task.__name__}')
             res = await task(*args, **kwargs)
             return res
         except (ConnectionError, gaierror):
