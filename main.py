@@ -69,7 +69,8 @@ def load_history(filepath: str, messages_queue) -> None:
             messages_queue.put_nowait(message.rstrip())
 
 
-async def main():
+async def run_application():
+    """Асинхронная функция для запуска чата."""
     args = parse_arguments()
     load_history(
         args.history,
@@ -110,5 +111,14 @@ async def main():
         )
 
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+def main():
+    """Функция для запуска логики приложения."""
+    try:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(run_application())
+    except (KeyboardInterrupt, gui.TkAppClosed):
+        logger.debug('Приложение закрыто.')
+
+
+if __name__ == '__main__':
+    main()
