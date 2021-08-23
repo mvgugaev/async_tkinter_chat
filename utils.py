@@ -1,8 +1,39 @@
+"""Набор дополнительных утилит."""
 import json
+from anyio import ExceptionGroup
 import asyncio
+import decorator
 from pathlib import Path
+from socket import gaierror
 import configargparse
 from contextlib import asynccontextmanager
+
+
+@decorator.decorator
+async def change_timeout_to_connection_error(task, *args, **kwargs):
+    """Декоратор, который переводит asyncio.exceptions.TimeoutError > ConnectionError"""
+    try:
+        res = await task(*args, **kwargs)
+        return res
+    except asyncio.exceptions.TimeoutError:
+        raise ConnectionError
+
+@decorator.decorator
+async def reconnect(task, *args, **kwargs):
+    """Декоратор для перезапуска карутины в случае ConnectionError и gaierror."""
+    while True:
+        try:
+            print(f'Start coro {task.__name__}')
+            res = await task(*args, **kwargs)
+            return res
+        except (ConnectionError, gaierror):
+            await asyncio.sleep(0.5)
+        except ExceptionGroup as ex_group:
+            for ex in ex_group.exceptions:
+                if not isinstance(ex, (ConnectionError, gaierror)):
+                    raise ex
+
+        await asyncio.sleep(0.5)
 
 
 def convert_json_string_to_object(json_string: str):

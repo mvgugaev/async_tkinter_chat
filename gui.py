@@ -1,3 +1,4 @@
+"""Пользовательский интерфейс асинхронного чата."""
 import tkinter as tk
 import asyncio
 from tkinter.scrolledtext import ScrolledText
