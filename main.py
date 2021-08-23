@@ -8,7 +8,7 @@ import gui
 from utils import get_parser
 from server import handle_connection
 from auntification import InvalidToken
-from anyio import create_task_group, ExceptionGroup
+from anyio import create_task_group
 
 TOKEN_FILE_PATH = 'token.txt'
 

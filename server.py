@@ -21,6 +21,10 @@ async def ping_server(watchdog_queue, host: str, port: str, logger, timeout: flo
     async with open_connection(host, port, logger) as (_, writer):
         while True:
             async with async_timeout(timeout) as cm:
+                if writer.is_closing():
+                    await writer.wait_closed()
+                    raise ConnectionError
+
                 await submit_message(
                     writer,
                     '',
@@ -88,7 +92,7 @@ async def generate_msgs(messages_queue, messages_history_queue, status_queue, wa
             status_queue.put_nowait(gui.ReadConnectionStateChanged.ESTABLISHED)
             while not reader.at_eof():
                 text_from_chat = await read_and_print_from_socket(reader, logger)
-                date_string = datetime.datetime.now().strftime("%d.%m.%y %H:%M")
+                date_string = datetime.datetime.now().strftime('%d.%m.%y %H:%M')
                 message = f'[{date_string}] {text_from_chat}'
                 messages_history_queue.put_nowait(message)
                 messages_queue.put_nowait(message)

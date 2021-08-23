@@ -10,12 +10,16 @@ from utils import (
 
 
 class UserStateReceived:
+    """Класс состояния пользователя в процессе регистрации."""
+
     def __init__(self, status, nickname):
         self.status = status
         self.nickname = nickname
 
 
 class RegisterReceived:
+    """Класс с данными регистрации."""
+
     def __init__(self, status: bool, nickname, token):
         self.status = status
         self.nickname = nickname
@@ -23,6 +27,7 @@ class RegisterReceived:
 
 
 class InvalidToken(Exception):
+    """Исключение некорректного токена пользователя."""
     pass
 
 
@@ -64,8 +69,7 @@ async def register(host: str, port: str, name: str, token_file_name: str, regist
             await close_connection(writer, logger)
             return False
 
-        hash = json_response['account_hash']
-        nuckname = json_response['nickname']
+        hash, nuckname = json_response['account_hash'], json_response['nickname']
 
         async with aiofiles.open(token_file_name, mode='w') as token_file:
             await token_file.write(hash)
