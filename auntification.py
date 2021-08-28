@@ -39,14 +39,14 @@ async def authorize(reader, writer, logger, token_file, token = None):
             token = await token_file.read()
 
     await write_to_socket(writer, f'{token.rstrip()}\n', logger)
-    response = await read_and_print_from_socket(reader, logger)
-    json_response = convert_json_string_to_object(response)
-    if not json_response:
+    json_response = await read_and_print_from_socket(reader, logger)
+    response_data = convert_json_string_to_object(json_response)
+    if not response_data:
         logger.debug('Неизвестный токен. Проверьте его или зарегистрируйте заново.')
         raise InvalidToken()
     
     await read_and_print_from_socket(reader, logger)
-    return json_response['nickname']
+    return response_data['nickname']
 
 
 async def register(host: str, port: str, name: str, token_file_name: str, register_response_queue, status_updates_queue, logger):
