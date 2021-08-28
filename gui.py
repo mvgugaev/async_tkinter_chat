@@ -38,7 +38,6 @@ async def update_tk(root_frame, interval=1 / 120):
         try:
             root_frame.update()
         except tk.TclError:
-            # if application has been destroyed/closed
             raise TkAppClosed()
         await asyncio.sleep(interval)
 
@@ -46,14 +45,12 @@ async def update_tk(root_frame, interval=1 / 120):
 async def update_conversation_history(panel, messages_queue):
     while True:
         msg = await messages_queue.get()
-
         panel['state'] = 'normal'
+
         if panel.index('end-1c') != '1.0':
             panel.insert('end', '\n')
+
         panel.insert('end', msg)
-        # TODO сделать промотку умной, чтобы не мешала просматривать историю сообщений
-        # ScrolledText.frame
-        # ScrolledText.vbar
         panel.yview(tk.END)
         panel['state'] = 'disabled'
 
@@ -78,6 +75,7 @@ async def update_status_panel(status_labels, status_updates_queue):
 
 
 def create_status_panel(root_frame):
+    """Панель статуса подключения к серверу и аунтификации."""
     status_frame = tk.Frame(root_frame)
     status_frame.pack(side='bottom', fill=tk.X)
 

@@ -1,4 +1,3 @@
-"""Набор дополнительных утилит."""
 import json
 from anyio import ExceptionGroup
 import asyncio
@@ -23,8 +22,8 @@ async def reconnect(task, *args, **kwargs):
     """Декоратор для перезапуска карутины в случае ConnectionError и gaierror."""
     while True:
         try:
-            res = await task(*args, **kwargs)
-            return res
+            result = await task(*args, **kwargs)
+            return result
         except (ConnectionError, gaierror):
             await asyncio.sleep(0.5)
         except ExceptionGroup as ex_group:
