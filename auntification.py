@@ -79,7 +79,7 @@ async def register(
             await close_connection(writer, logger)
             return False
 
-        hash, nuckname = json_response['account_hash'], json_response['nickname']  # noqa: E501
+        hash, nickname = json_response['account_hash'], json_response['nickname']  # noqa: E501
 
         async with aiofiles.open(token_file_name, mode='w') as token_file:
             await token_file.write(hash)
@@ -87,14 +87,14 @@ async def register(
         register_response_queue.put_nowait(
             RegisterReceived(
                 True,
-                nuckname,
+                nickname,
                 hash,
             )
         )
 
         status_updates_queue.put_nowait(
             UserStateReceived(
-                nuckname,
+                nickname,
                 'активен',
             )
         )

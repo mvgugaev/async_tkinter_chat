@@ -64,9 +64,10 @@ async def save_messages(filepath: str, messages_history_queue):
 
 def load_history(filepath: str, messages_queue) -> None:
     """Функция для загрузки истории в очередь messages_queue."""
-    with open(Path(filepath), mode='r') as history_file:
-        for message in history_file:
-            messages_queue.put_nowait(message.rstrip())
+    if Path(filepath).is_file():
+        with open(Path(filepath), mode='r') as history_file:
+            for message in history_file:
+                messages_queue.put_nowait(message.rstrip())
 
 
 async def run_application():
