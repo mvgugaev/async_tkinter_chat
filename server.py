@@ -21,8 +21,8 @@ async def ping_server(
     host: str,
     port: str,
     logger,
-    timeout: float = 0.3,
-    interval: float = 0.3,
+    timeout: float=0.3,
+    interval: float=0.3,
 ):
     """
         Корутина для отправки пустого сообщения раз в <interval>
@@ -46,7 +46,7 @@ async def ping_server(
 
 
 @change_timeout_to_connection_error
-async def watch_for_connection(watchdog_queue, logger, timeout: float = 1.5):
+async def watch_for_connection(watchdog_queue, logger, timeout: float=1.5):
     """
         Асинхронная корутина, которая опрашивает очередь watchdog_queue и
         ожидает сообщения минимум раз в <timeout>.
