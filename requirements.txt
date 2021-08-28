@@ -5,8 +5,12 @@ async-timeout==3.0.1
 attrs==21.2.0
 ConfigArgParse==1.5.2
 decorator==5.0.9
+flake8==3.9.2
 idna==3.2
+mccabe==0.6.1
 outcome==1.1.0
+pycodestyle==2.7.0
+pyflakes==2.3.1
 sniffio==1.2.0
 sortedcontainers==2.4.0
 tk==0.1.0

@@ -3,8 +3,8 @@ import aiofiles
 from utils import (
     open_connection,
     close_connection,
-    convert_json_string_to_object, 
-    write_to_socket, 
+    convert_json_string_to_object,
+    write_to_socket,
     read_and_print_from_socket,
 )
 
@@ -31,7 +31,7 @@ class InvalidToken(Exception):
     pass
 
 
-async def authorize(reader, writer, logger, token_file, token = None):
+async def authorize(reader, writer, logger, token_file, token=None):
     """Асинхронная функция для авторизации в чате."""
     await read_and_print_from_socket(reader, logger)
     if not token:
@@ -44,7 +44,7 @@ async def authorize(reader, writer, logger, token_file, token = None):
     if not response_data:
         logger.debug('Неизвестный токен. Проверьте его или зарегистрируйте заново.')
         raise InvalidToken()
-    
+
     await read_and_print_from_socket(reader, logger)
     return response_data['nickname']
 
@@ -55,10 +55,10 @@ async def register(host: str, port: str, name: str, token_file_name: str, regist
         await read_and_print_from_socket(reader, logger)
         await write_to_socket(writer, '\n', logger)
         await read_and_print_from_socket(reader, logger)
-            
+
         await write_to_socket(
-            writer, 
-            '{}\n'.format(name.replace("\n", "\\n")), 
+            writer,
+            '{}\n'.format(name.replace("\n", "\\n")),
             logger,
         )
 

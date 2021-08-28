@@ -5,8 +5,10 @@ from anyio import create_task_group
 from tkinter.scrolledtext import ScrolledText
 from enum import Enum
 
+
 class TkAppClosed(Exception):
     pass
+
 
 class ReadConnectionStateChanged(Enum):
     INITIATED = 'устанавливаем соединение'
@@ -16,6 +18,7 @@ class ReadConnectionStateChanged(Enum):
     def __str__(self):
         return str(self.value)
 
+
 class SendingConnectionStateChanged(Enum):
     INITIATED = 'устанавливаем соединение'
     ESTABLISHED = 'соединение установлено'
@@ -24,14 +27,17 @@ class SendingConnectionStateChanged(Enum):
     def __str__(self):
         return str(self.value)
 
+
 class NicknameReceived:
     def __init__(self, nickname):
         self.nickname = nickname
+
 
 def process_new_message(input_field, sending_queue):
     text = input_field.get()
     sending_queue.put_nowait(text)
     input_field.delete(0, tk.END)
+
 
 async def update_tk(root_frame, interval=1 / 120):
     while True:
@@ -58,9 +64,9 @@ async def update_conversation_history(panel, messages_queue):
 async def update_status_panel(status_labels, status_updates_queue):
     nickname_label, read_label, write_label = status_labels
 
-    read_label['text'] = f'Чтение: нет соединения'
-    write_label['text'] = f'Отправка: нет соединения'
-    nickname_label['text'] = f'Имя пользователя: неизвестно'
+    read_label['text'] = 'Чтение: нет соединения'
+    write_label['text'] = 'Отправка: нет соединения'
+    nickname_label['text'] = 'Имя пользователя: неизвестно'
 
     while True:
         msg = await status_updates_queue.get()

@@ -17,10 +17,13 @@ from utils import (
 
 @change_timeout_to_connection_error
 async def ping_server(watchdog_queue, host: str, port: str, logger, timeout: float = 0.3, interval: float = 0.3):
-    """Корутина для отправки пустого сообщения раз в <interval> секунд и запись в watchdog_queue. В случае превышения <timeout> вызывается ConnectionError."""
+    """
+        Корутина для отправки пустого сообщения раз в <interval> секунд и запись в watchdog_queue.
+        В случае превышения <timeout> вызывается ConnectionError.
+    """
     async with open_connection(host, port, logger) as (_, writer):
         while True:
-            async with async_timeout(timeout) as cm:
+            async with async_timeout(timeout) as _:
                 if writer.is_closing():
                     await writer.wait_closed()
                     raise ConnectionError
@@ -36,9 +39,12 @@ async def ping_server(watchdog_queue, host: str, port: str, logger, timeout: flo
 
 @change_timeout_to_connection_error
 async def watch_for_connection(watchdog_queue, logger, timeout: float = 1.5):
-    """Асинхронная корутина, которая опрашивает очередь watchdog_queue и ожидает сообщения минимум раз в <timeout>."""
+    """
+        Асинхронная корутина, которая опрашивает очередь watchdog_queue и
+        ожидает сообщения минимум раз в <timeout>.
+    """
     while True:
-        async with async_timeout(timeout) as cm:
+        async with async_timeout(timeout) as _:
             message = await watchdog_queue.get()
             logger.debug(f'[{time.time()}] Connection is alive. {message}')
 
@@ -73,7 +79,7 @@ async def send_msgs(sending_queue, status_queue, watchdog_queue, host: str, port
                 if writer.is_closing():
                     await writer.wait_closed()
                     break
-                
+
                 message = await sending_queue.get()
                 await submit_message(
                     writer,
@@ -85,7 +91,10 @@ async def send_msgs(sending_queue, status_queue, watchdog_queue, host: str, port
 
 
 async def generate_msgs(messages_queue, messages_history_queue, status_queue, watchdog_queue, host: str, port: str, logger):
-    """Асинхронная функция для чтения сообщений из чата и наполнения очередей messages_queue и messages_history_queue."""
+    """
+        Асинхронная функция для чтения сообщений из чата и наполнения очередей
+        messages_queue и messages_history_queue.
+    """
     while True:
         status_queue.put_nowait(gui.ReadConnectionStateChanged.INITIATED)
         async with open_connection(host, port, logger) as (reader, _):
@@ -98,12 +107,12 @@ async def generate_msgs(messages_queue, messages_history_queue, status_queue, wa
                 messages_queue.put_nowait(message)
                 watchdog_queue.put_nowait('New message in chat')
                 await asyncio.sleep(1)
-            
+
         status_queue.put_nowait(gui.ReadConnectionStateChanged.CLOSED)
 
 
 @reconnect
-async def handle_connection(args, messages_queue, messages_history_queue, status_updates_queue, watchdog_queue, sending_queue, logger, watchdog_logger, token_file_path: str):
+async def handle_connection(args, messages_queue, messages_history_queue, status_updates_queue, watchdog_queue, sending_queue, logger, watchdog_logger, token_file_path: str):  # noqa: E501
     """Группа задач для работы с сервером."""
     async with create_task_group() as tg:
         tg.start_soon(

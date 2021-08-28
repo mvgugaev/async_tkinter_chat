@@ -26,13 +26,13 @@ def parse_arguments():
         'config.conf',
     )
     parser.add_arg(
-        '-ho', 
-        '--host', 
+        '-ho',
+        '--host',
         help='Server HOST',
     )
     parser.add_arg(
         '-wp',
-        '--write_port', 
+        '--write_port',
         help='Server PORT to write messages',
     )
     config, _ = parser.parse_known_args()
@@ -84,12 +84,11 @@ def process_new_register(input_field, register_request_queue):
     register_request_queue.put_nowait(text)
 
 
-
 async def update_status_panel(status_labels, status_updates_queue):
     nickname_label, token_lable = status_labels
 
-    nickname_label['text'] = f'Ник: не определено'
-    token_lable['text'] = f'Токен: не активен'
+    nickname_label['text'] = 'Ник: не определено'
+    token_lable['text'] = 'Токен: не активен'
 
     while True:
         status_message = await status_updates_queue.get()
@@ -118,13 +117,13 @@ async def update_alerts(register_response_queue):
 async def draw(register_response_queue, register_request_queue, status_updates_queue):
     root = tk.Tk()
     root.title('Регистрация')
-    
+
     root_frame = tk.Frame()
     root_frame.grid()
     root_frame.pack(
-        fill='both', 
-        expand=True, 
-        padx=20, 
+        fill='both',
+        expand=True,
+        padx=20,
         pady=20,
     )
 
@@ -135,18 +134,18 @@ async def draw(register_response_queue, register_request_queue, status_updates_q
     input_field.pack(side='left', fill=tk.X, expand=True, pady=5)
 
     register_button = tk.Button(
-        root_frame, 
-        text='Зарегистрировать', 
-        width=15, 
+        root_frame,
+        text='Зарегистрировать',
+        width=15,
         height=3,
     )
     register_button.pack()
     register_button['command'] = lambda: process_new_register(
-            input_field, 
+            input_field,
             register_request_queue,
     )
     status_labels = create_status_panel(root_frame)
-    
+
     async with create_task_group() as tg:
         tg.start_soon(
             update_tk,

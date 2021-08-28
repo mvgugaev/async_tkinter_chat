@@ -16,3 +16,8 @@ python3 register.py
 ```
 python3 main.py
 ```
+
+### flake8 check
+```
+flake8 .
+```

@@ -17,6 +17,7 @@ async def change_timeout_to_connection_error(task, *args, **kwargs):
     except asyncio.exceptions.TimeoutError:
         raise ConnectionError
 
+
 @decorator.decorator
 async def reconnect(task, *args, **kwargs):
     """Декоратор для перезапуска карутины в случае ConnectionError и gaierror."""
@@ -71,6 +72,7 @@ def get_parser(description: str, config_file: str):
         ],
         description=description,
     )
+
 
 @asynccontextmanager
 async def open_connection(host: str, port: int, logger):

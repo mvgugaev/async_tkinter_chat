@@ -32,23 +32,23 @@ def parse_arguments():
         'config.conf',
     )
     parser.add_arg(
-        '-ho', 
-        '--host', 
+        '-ho',
+        '--host',
         help='Server HOST',
     )
     parser.add_arg(
         '-rp',
-        '--read_port', 
+        '--read_port',
         help='Server PORT to read messages',
     )
     parser.add_arg(
         '-wp',
-        '--write_port', 
+        '--write_port',
         help='Server PORT to write messages',
     )
     parser.add_arg(
-        '-hi', 
-        '--history', 
+        '-hi',
+        '--history',
         help='File to store messages',
     )
     return parser.parse_args()
@@ -103,7 +103,7 @@ async def run_application():
                 args.history,
                 messages_history_queue,
             )
-            
+
     except InvalidToken:
         messagebox.showinfo(
             'Неверный токен',
