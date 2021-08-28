@@ -39,8 +39,19 @@ def parse_arguments():
     return config
 
 
-async def register_from_queue(host: str, port: str, token_file_name: str, register_request_queue, register_response_queue, status_updates_queue, logger):
-    """Асинхронная функция для регистрации пользователя при получении сообщения из очереди."""
+async def register_from_queue(
+    host: str,
+    port: str,
+    token_file_name: str,
+    register_request_queue,
+    register_response_queue,
+    status_updates_queue,
+    logger,
+):
+    """
+        Асинхронная функция для регистрации пользователя
+        при получении сообщения из очереди.
+    """
     while True:
         username = await register_request_queue.get()
         try:
@@ -70,10 +81,22 @@ def create_status_panel(root_frame):
     status_frame = tk.Frame(root_frame)
     status_frame.pack(side='bottom', fill=tk.X)
 
-    nickname_label = tk.Label(status_frame, height=1, fg='grey', font='arial 10', anchor='w')
+    nickname_label = tk.Label(
+        status_frame,
+        height=1,
+        fg='grey',
+        font='arial 10',
+        anchor='w',
+    )
     nickname_label.pack(side='top', fill=tk.X)
 
-    token_lable = tk.Label(status_frame, height=1, fg='grey', font='arial 10', anchor='w')
+    token_lable = tk.Label(
+        status_frame,
+        height=1,
+        fg='grey',
+        font='arial 10',
+        anchor='w',
+    )
     token_lable.pack(side='top', fill=tk.X)
 
     return (nickname_label, token_lable)
@@ -114,7 +137,12 @@ async def update_alerts(register_response_queue):
             )
 
 
-async def draw(register_response_queue, register_request_queue, status_updates_queue):
+async def draw(
+    register_response_queue,
+    register_request_queue,
+    status_updates_queue,
+):
+    """Функция отрисовки tkinter интерфеса."""
     root = tk.Tk()
     root.title('Регистрация')
 

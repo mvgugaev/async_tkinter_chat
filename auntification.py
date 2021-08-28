@@ -42,14 +42,24 @@ async def authorize(reader, writer, logger, token_file, token=None):
     json_response = await read_and_print_from_socket(reader, logger)
     response_data = convert_json_string_to_object(json_response)
     if not response_data:
-        logger.debug('Неизвестный токен. Проверьте его или зарегистрируйте заново.')
+        logger.debug(
+            'Неизвестный токен. Проверьте его или зарегистрируйте заново.',
+        )
         raise InvalidToken()
 
     await read_and_print_from_socket(reader, logger)
     return response_data['nickname']
 
 
-async def register(host: str, port: str, name: str, token_file_name: str, register_response_queue, status_updates_queue, logger):
+async def register(
+    host: str,
+    port: str,
+    name: str,
+    token_file_name: str,
+    register_response_queue,
+    status_updates_queue,
+    logger,
+):
     """Асинхронная функция для регистрации в чате."""
     async with open_connection(host, port, logger) as (reader, writer):
         await read_and_print_from_socket(reader, logger)
@@ -69,7 +79,7 @@ async def register(host: str, port: str, name: str, token_file_name: str, regist
             await close_connection(writer, logger)
             return False
 
-        hash, nuckname = json_response['account_hash'], json_response['nickname']
+        hash, nuckname = json_response['account_hash'], json_response['nickname']  # noqa: E501
 
         async with aiofiles.open(token_file_name, mode='w') as token_file:
             await token_file.write(hash)

@@ -16,10 +16,18 @@ from utils import (
 
 
 @change_timeout_to_connection_error
-async def ping_server(watchdog_queue, host: str, port: str, logger, timeout: float = 0.3, interval: float = 0.3):
+async def ping_server(
+    watchdog_queue,
+    host: str,
+    port: str,
+    logger,
+    timeout: float = 0.3,
+    interval: float = 0.3,
+):
     """
-        Корутина для отправки пустого сообщения раз в <interval> секунд и запись в watchdog_queue.
-        В случае превышения <timeout> вызывается ConnectionError.
+        Корутина для отправки пустого сообщения раз в <interval>
+        секунд и запись в watchdog_queue. В случае превышения <timeout>
+        вызывается ConnectionError.
     """
     async with open_connection(host, port, logger) as (_, writer):
         while True:
@@ -58,13 +66,26 @@ async def submit_message(writer, message: str, logger):
     )
 
 
-async def send_msgs(sending_queue, status_queue, watchdog_queue, host: str, port: str, logger, token_file_path: str):
-    """Асинхронная функция для отправки сообщений из очереди sending_queue в чат."""
+async def send_msgs(
+    sending_queue,
+    status_queue,
+    watchdog_queue,
+    host: str,
+    port: str,
+    logger,
+    token_file_path: str,
+):
+    """
+        Асинхронная функция для отправки сообщений
+        из очереди sending_queue в чат.
+    """
     while True:
         status_queue.put_nowait(gui.NicknameReceived('Неизвестно'))
         status_queue.put_nowait(gui.SendingConnectionStateChanged.INITIATED)
         async with open_connection(host, port, logger) as (reader, writer):
-            status_queue.put_nowait(gui.SendingConnectionStateChanged.ESTABLISHED)
+            status_queue.put_nowait(
+                gui.SendingConnectionStateChanged.ESTABLISHED,
+            )
             watchdog_queue.put_nowait('Prompt before auth')
             username = await authorize(
                 reader,
@@ -74,7 +95,9 @@ async def send_msgs(sending_queue, status_queue, watchdog_queue, host: str, port
             )
             watchdog_queue.put_nowait('Authorization done')
             status_queue.put_nowait(gui.NicknameReceived(username))
-            status_queue.put_nowait(gui.SendingConnectionStateChanged.ESTABLISHED)
+            status_queue.put_nowait(
+                gui.SendingConnectionStateChanged.ESTABLISHED,
+            )
             while True:
                 if writer.is_closing():
                     await writer.wait_closed()
@@ -90,7 +113,15 @@ async def send_msgs(sending_queue, status_queue, watchdog_queue, host: str, port
         status_queue.put_nowait(gui.SendingConnectionStateChanged.CLOSED)
 
 
-async def generate_msgs(messages_queue, messages_history_queue, status_queue, watchdog_queue, host: str, port: str, logger):
+async def generate_msgs(
+    messages_queue,
+    messages_history_queue,
+    status_queue,
+    watchdog_queue,
+    host: str,
+    port: str,
+    logger,
+):
     """
         Асинхронная функция для чтения сообщений из чата и наполнения очередей
         messages_queue и messages_history_queue.
@@ -100,8 +131,11 @@ async def generate_msgs(messages_queue, messages_history_queue, status_queue, wa
         async with open_connection(host, port, logger) as (reader, _):
             status_queue.put_nowait(gui.ReadConnectionStateChanged.ESTABLISHED)
             while not reader.at_eof():
-                text_from_chat = await read_and_print_from_socket(reader, logger)
-                date_string = datetime.datetime.now().strftime('%d.%m.%y %H:%M')
+                text_from_chat = await read_and_print_from_socket(
+                    reader,
+                    logger,
+                )
+                date_string = datetime.datetime.now().strftime('%d.%m.%y %H:%M')  # noqa: E501
                 message = f'[{date_string}] {text_from_chat}'
                 messages_history_queue.put_nowait(message)
                 messages_queue.put_nowait(message)

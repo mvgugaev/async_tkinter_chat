@@ -10,7 +10,10 @@ from contextlib import asynccontextmanager
 
 @decorator.decorator
 async def change_timeout_to_connection_error(task, *args, **kwargs):
-    """Декоратор, который переводит asyncio.exceptions.TimeoutError > ConnectionError"""
+    """
+        Декоратор, который переводит
+        asyncio.exceptions.TimeoutError > ConnectionError.
+    """
     try:
         res = await task(*args, **kwargs)
         return res
@@ -20,7 +23,10 @@ async def change_timeout_to_connection_error(task, *args, **kwargs):
 
 @decorator.decorator
 async def reconnect(task, *args, **kwargs):
-    """Декоратор для перезапуска карутины в случае ConnectionError и gaierror."""
+    """
+        Декоратор для перезапуска карутины в случае
+        ConnectionError и gaierror.
+    """
     while True:
         try:
             result = await task(*args, **kwargs)
@@ -36,7 +42,10 @@ async def reconnect(task, *args, **kwargs):
 
 
 def convert_json_string_to_object(json_string: str):
-    """Конвертация строки в json -> result (None в случае некорректной JSON строки)."""
+    """
+        Конвертация строки в json -> result
+        (None в случае некорректной JSON строки).
+    """
     try:
         return json.loads(json_string)
     except ValueError:
