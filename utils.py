@@ -11,8 +11,7 @@ from contextlib import asynccontextmanager
 @decorator.decorator
 async def change_timeout_to_connection_error(task, *args, **kwargs):
     """
-        Декоратор, который переводит
-        asyncio.exceptions.TimeoutError > ConnectionError.
+        Перевод asyncio.exceptions.TimeoutError в ConnectionError.
     """
     try:
         res = await task(*args, **kwargs)
@@ -24,8 +23,7 @@ async def change_timeout_to_connection_error(task, *args, **kwargs):
 @decorator.decorator
 async def reconnect(task, *args, **kwargs):
     """
-        Декоратор для перезапуска карутины в случае
-        ConnectionError и gaierror.
+        Перезапуск карутины в случае ConnectionError и gaierror.
     """
     while True:
         try:
@@ -53,14 +51,14 @@ def convert_json_string_to_object(json_string: str):
 
 
 async def write_to_socket(writer, message: str, logger):
-    """Метод для отправки текста в сокет."""
+    """Отправки текста в сокет."""
     writer.write(message.encode())
     logger.debug(message.rstrip())
     await writer.drain()
 
 
 async def read_and_print_from_socket(reader, logger):
-    """Метод для чтения и вывода строки из сокета."""
+    """Чтения и вывод строки из сокета."""
     string_from_chat = (await reader.readline()).decode().rstrip()
     logger.debug(string_from_chat)
     return string_from_chat
@@ -74,7 +72,7 @@ async def close_connection(writer, logger):
 
 
 def get_parser(description: str, config_file: str):
-    """Функция для генерации парсера аргументов командной строки."""
+    """Генерация парсера аргументов командной строки."""
     return configargparse.ArgParser(
         default_config_files=[
             str(Path.cwd() / config_file),
@@ -85,7 +83,7 @@ def get_parser(description: str, config_file: str):
 
 @asynccontextmanager
 async def open_connection(host: str, port: int, logger):
-    """Контекстный менеджер для открытия tcp соединения"""
+    """Открытие tcp соединения с сервером"""
     reader, writer = await asyncio.open_connection(host, port)
     try:
         yield reader, writer

@@ -1,4 +1,3 @@
-"""Набор функций для авторизации в чате."""
 import aiofiles
 from utils import (
     open_connection,
@@ -10,7 +9,7 @@ from utils import (
 
 
 class UserStateReceived:
-    """Класс состояния пользователя в процессе регистрации."""
+    """Состояние пользователя в процессе регистрации."""
 
     def __init__(self, status, nickname):
         self.status = status
@@ -18,7 +17,7 @@ class UserStateReceived:
 
 
 class RegisterReceived:
-    """Класс с данными регистрации."""
+    """Данные для регистрации."""
 
     def __init__(self, status: bool, nickname, token):
         self.status = status
@@ -27,12 +26,10 @@ class RegisterReceived:
 
 
 class InvalidToken(Exception):
-    """Исключение некорректного токена пользователя."""
     pass
 
 
 async def authorize(reader, writer, logger, token_file, token=None):
-    """Асинхронная функция для авторизации в чате."""
     await read_and_print_from_socket(reader, logger)
     if not token:
         async with aiofiles.open(token_file, mode='r') as token_file:
@@ -40,15 +37,15 @@ async def authorize(reader, writer, logger, token_file, token=None):
 
     await write_to_socket(writer, f'{token.rstrip()}\n', logger)
     json_response = await read_and_print_from_socket(reader, logger)
-    response_data = convert_json_string_to_object(json_response)
-    if not response_data:
+    response = convert_json_string_to_object(json_response)
+    if not response:
         logger.debug(
             'Неизвестный токен. Проверьте его или зарегистрируйте заново.',
         )
         raise InvalidToken()
 
     await read_and_print_from_socket(reader, logger)
-    return response_data['nickname']
+    return response['nickname']
 
 
 async def register(
@@ -60,7 +57,6 @@ async def register(
     status_updates_queue,
     logger,
 ):
-    """Асинхронная функция для регистрации в чате."""
     async with open_connection(host, port, logger) as (reader, writer):
         await read_and_print_from_socket(reader, logger)
         await write_to_socket(writer, '\n', logger)
@@ -72,14 +68,14 @@ async def register(
             logger,
         )
 
-        response = await read_and_print_from_socket(reader, logger)
-        json_response = convert_json_string_to_object(response)
-        if not json_response:
+        json_response = await read_and_print_from_socket(reader, logger)
+        response = convert_json_string_to_object(json_response)
+        if not response:
             logger.debug('Не удалось получить токен. Повторите попытку.')
             await close_connection(writer, logger)
             return False
 
-        hash, nickname = json_response['account_hash'], json_response['nickname']  # noqa: E501
+        hash, nickname = response['account_hash'], response['nickname']  # noqa: E501
 
         async with aiofiles.open(token_file_name, mode='w') as token_file:
             await token_file.write(hash)

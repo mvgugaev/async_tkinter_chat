@@ -1,4 +1,3 @@
-"""Набор функций для регистрации в чате."""
 import logging
 import asyncio
 import tkinter as tk
@@ -20,7 +19,7 @@ logger = logging.getLogger('register')
 
 
 def parse_arguments():
-    """Функция обработки аргументов командной строки."""
+    """Обработка аргументов командной строки."""
     parser = get_parser(
         'Async app to register in chat.',
         'config.conf',
@@ -49,7 +48,7 @@ async def register_from_queue(
     logger,
 ):
     """
-        Асинхронная функция для регистрации пользователя
+        Регистрации пользователя
         при получении сообщения из очереди.
     """
     while True:

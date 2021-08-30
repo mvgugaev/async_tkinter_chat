@@ -1,4 +1,3 @@
-"""Пользовательский интерфейс асинхронного чата."""
 import tkinter as tk
 import asyncio
 from anyio import create_task_group
@@ -119,7 +118,7 @@ def create_status_panel(root_frame):
 
 
 async def draw(messages_queue, sending_queue, status_updates_queue):
-    """Асинхронная функция для отрисовки интерфейса чата."""
+    """Отрисовка интерфейса чата."""
     root = tk.Tk()
     root.title('Чат Майнкрафтера')
 
